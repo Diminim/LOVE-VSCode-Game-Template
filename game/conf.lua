@@ -2,6 +2,12 @@ local IS_DEBUG = os.getenv("LOCAL_LUA_DEBUGGER_VSCODE") == "1" and arg[2] == "de
 if IS_DEBUG then
 	require("lldebugger").start()
 
+	local run = love.run
+	function love.run(...)
+	   local f = lldebugger.call(run, false, ...)
+	   return function(...) return lldebugger.call(f, false, ...) end
+	end
+
 	function love.errorhandler(msg)
 		error(msg, 2)
 	end
@@ -11,7 +17,7 @@ end
 function love.conf(t)
 	t.identity              = nil
 	t.appendidentity        = false
-	t.version               = "11.4"
+	t.version               = "12.0"
 	t.console               = false
 	t.accelerometerjoystick = false
 	t.externalstorage       = false
